@@ -10,6 +10,9 @@ typedef unsigned int UINT;
 
 class IVisual{
 public:
+	enum ROTATETYPE{CLOCKWISE=1,REVCLOCKWISE};
+
+public:
 	IVisual();
 	~IVisual();
 
@@ -17,7 +20,6 @@ public:
 	void setName(const char *name);
 	
 	void setWidth(const UINT width);
-	//bool setHeight(UINT height);
 
 	/*
 	 * 将数据附加到_buffer中
@@ -27,17 +29,29 @@ public:
 	 * 	将buf中的内容拷贝到_buffer中
 	 * */
 	void appendRows(FLOAT *buf, int rows);   
+	
+	/*
+	 * 
+	 * */
 	void save();
 
-//private:
-//	void buffer2Image();
+	/*
+	 * 图像进行对称操作
+	 * */
+	void reverse();
+
+	/*
+	 * 图像进行旋转
+	 * */
+	void rotate(ROTATETYPE type);
 
 private:
-	//BYTE *_image;
+	bool isNullImage();
+
+private:
 	FLOAT *_buffer;
 	UINT _width;
 	UINT _height;
-	//UINT _maxWidth;
 	UINT _maxHeight;
 	string _filename;
 };

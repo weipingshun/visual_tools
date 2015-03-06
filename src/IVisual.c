@@ -63,11 +63,7 @@ void IVisual::appendRows(FLOAT *buf, int rows){
 		_maxHeight = _maxHeight==0
 			? (rows<1024?1024:rows)
 			: _maxHeight<<1;
-	//	if(NULL == _buffer){
-	//		malloc()
-	//	}else{
 		_buffer = (FLOAT*) realloc(_buffer,sizeof(float)*_width*_maxHeight);	
-	//	}
 	}
 	memcpy(_buffer+_width*_height,buf, sizeof(FLOAT)*_width*rows);
 	_height += rows;
@@ -107,3 +103,63 @@ void IVisual::save(){
 	image = NULL;
 	return;
 }
+
+//
+// array resverse have fast alg ?
+// change two data have fast alg ?
+//
+void IVisual::reverse(){
+	if(isNullImage()){
+		printf("WARNING:null image can't reverse!\n");
+		return;
+	}
+
+	int curX=0,curY=0;
+	float *pCurRow = NULL;
+	float tmp;
+	for(curY=0,pCurRow=_buffer;curY<_height;curY++,pCurRow+=_width){
+		for(curX=0;curX<_width>>1;curX++){
+			tmp = pCurRow[curX];
+			pCurRow[curX] = pCurRow[_width-curX-1];
+			pCurRow[_width-curX-1] = tmp;
+		}
+	}
+	return;
+}
+
+void IVisual::rotate(ROTATETYPE type){
+	if(isNullImage()){
+		printf("WARNING:null image can't rotate\n");
+		return;
+	}
+
+	int oldX=0,oldY=0;
+	int newX=0,newY=0;
+	int len=_width*_height;
+	float *tmp = (float*)malloc(len*sizeof(FLOAT));
+	float *src,*dst;
+	if(NULL == tmp){
+		printf("WARNING:tmp malloc error\n");
+		return;
+	}
+	for(oldY=0;oldY<_height;oldY++){
+		for(oldX=0;oldX<_width;oldX++){
+			newX=oldY;
+			newY=_width-oldX-1;
+			*(tmp+newY*_height+newX) = *(_buffer+oldY*_width+oldX);
+		}
+	}
+
+	memcpy(_buffer,tmp, len*sizeof(float));
+	
+	int n = _width;
+	_width = _height;
+	_height = n;
+
+	free(tmp);
+	tmp = NULL;
+}
+
+bool IVisual::isNullImage(){
+	return (_width <= 0 || _height <= 0);
+} 
